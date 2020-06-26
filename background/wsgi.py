@@ -1,5 +1,5 @@
 """
-WSGI config for backgraound project.
+WSGI config for background project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backgraound.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'background.settings')
 
 application = get_wsgi_application()
