@@ -22,6 +22,18 @@ def checkSignature(request):
 def setUserInfo(request):
     return JsonResponse(models.setUserInfo(request))
 
+
 def getAllMarkers(request):
     return JsonResponse(models.getAllMarkers())
+
+
+def createLocation(request):
+    return JsonResponse(models.createLocation(request))
+
+
+def getPassages(request):
+    if 'locationid' in request.GET.keys():
+        return JsonResponse(models.getPassagesByLocation(request.GET['locationid']))
+    else:
+        return JsonResponse(models.getPassagesByOpenID(request.GET['openid']))
 

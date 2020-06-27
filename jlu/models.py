@@ -1,5 +1,5 @@
 from django.db import models
-import requests, json, hashlib
+import requests, json, hashlib, datetime
 
 
 # Create your models here.
@@ -7,32 +7,32 @@ import requests, json, hashlib
 
 class User(models.Model):
     nickName = models.CharField(max_length=50)
-    openID = models.TextField(unique=True, default=0)
+    openID = models.TextField(unique=True, default=0, editable=False)
     avatarUrl = models.TextField()
     sessionKey = models.TextField()
     gender = models.SmallIntegerField(default=1)
 
 
 class Location(models.Model):
-    latitude = models.FloatField(unique=True)
-    longitude = models.FloatField(unique=True)
-    createUserID = models.BigIntegerField(unique=True)
-    createUserOpenID = models.TextField(unique=True)
-    name = models.TextField(max_length=100)
+    latitude = models.FloatField(unique=True, editable=False)
+    longitude = models.FloatField(unique=True, editable=False)
+    createUserOpenID = models.TextField(unique=True, editable=False)
+    name = models.TextField(max_length=100, editable=False)
     passagesID = models.TextField()
-    createTime = models.DateTimeField()
+    createTime = models.DateTimeField(editable=False)
     checkedNum = models.BigIntegerField()
-    range = models.FloatField()
+    laRange = models.FloatField(editable=False)
+    loRange = models.FloatField(editable=False)
     rank = models.FloatField()
     totalScore = models.BigIntegerField()
     totalScorePeople = models.BigIntegerField()
-    city = models.TextField()
+    city = models.TextField(editable=False)
 
 
 class Passages(models.Model):
-    createUserOpenID = models.TextField(unique=True)
-    createUserID = models.BigIntegerField(unique=True)
-    picsUrl = models.TextField()
+    createUserOpenID = models.TextField()
+    locationID = models.BigIntegerField()
+    picsUrls = models.TextField()
     passageContent = models.TextField(max_length=10240)
 
 
@@ -56,23 +56,76 @@ def signature(request):
     return str(s1.hexdigest()) == str(request.GET['signature'])
 
 
+def getUserInfo(openid):
+    return User.objects.get(openID=openid)
+
+
 def setUserInfo(request):
     dataJSON = json.loads(str(request.GET['rawData']))
     if signature(request):
-        User.objects.filter(openID=str(request.GET['openid'])).update(
-            nickName=dataJSON['nickName'],
-            avatarUrl=dataJSON['avatarUrl'],
-            gender=dataJSON['gender']
-        )
-    return {'msg': "Success"}
+        try:
+            User.objects.filter(openID=str(request.GET['openid'])).update(
+                nickName=dataJSON['nickName'],
+                avatarUrl=dataJSON['avatarUrl'],
+                gender=dataJSON['gender']
+            )
+        except:
+            return {'msg': False}
+        else:
+            return {'msg': True}
 
 
-def isInRange(latitude, longitude):
-    pass
+def isInRange(la, lo, testLa, testLo, laRange, loRange):
+    if (abs(la - testLa) <= laRange) and (abs(lo - testLo) <= loRange):
+        return True
+    return False
 
 
 def isLocationExist(location):
-    pass
+    for i in Location.objects.filter('latitude', 'longitude', 'laRange', 'loRange'):
+        if isInRange(location['latitude'], location['longitude'], i['latitude'], i['longitude'], i['laRange'],
+                     i['loRange']):
+            return True
+    return False
+
+
+def createLocation(request):
+    data = request.GET
+    if not isLocationExist({'latitude': data['latitude'], 'longitude': data['longitude']}):
+        return {'msg': False}
+    else:
+        Location.objects.create(
+            latitude=data['latitude'],
+            longitude=data['longitude'],
+            createUserOpenID=data['openid'],
+            name=data['name'],
+            createTime=datetime.datetime.now(),
+            laRange=data['laRange'],
+            loRange=data['loRange']
+        )
+        return {'msg': True}
+
+
+def createPassage(request):
+    data = request.GET
+    try:
+        Passages.objects.create(
+        createUserOpenID=data['openid'],
+        locationID=data['locationid'],
+        passageContent=data['passagecontent']
+        )
+    except:
+        return {'msg': False}
+    else:
+        return {'msg': True}
+
+
+def getPassagesByLocation(locationID):
+    return Passages.objects.get(locationID=locationID)
+
+
+def getPassagesByOpenID(openid):
+    return Passages.objects.get(createUserOpenID=openid)
 
 
 def getAllMarkers():

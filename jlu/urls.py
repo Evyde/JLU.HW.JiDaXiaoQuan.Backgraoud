@@ -5,5 +5,7 @@ urlpatterns = [
     url('jlu/wxLogin', views.wxLogin),
     url('jlu/wxCheckSignature', views.checkSignature),
     url('jlu/wxSetUserInfo', views.setUserInfo),
-    url('jlu/wxGetAllMarkers', views.getAllMarkers),
+    url('jlu/getAllMarkers', views.getAllMarkers),
+    url('jlu/createLocation', views.createLocation),
+    url('jlu/getPassages',)
 ]
