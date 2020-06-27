@@ -4,5 +4,6 @@ from . import views
 urlpatterns = [
     url('jlu/wxLogin', views.wxLogin),
     url('jlu/wxCheckSignature', views.checkSignature),
-    url('jlu/wxSetUserInfo', views.setUserInfo)
+    url('jlu/wxSetUserInfo', views.setUserInfo),
+    url('jlu/wxGetAllMarkers', views.getAllMarkers),
 ]

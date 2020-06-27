@@ -21,3 +21,7 @@ def checkSignature(request):
 
 def setUserInfo(request):
     return JsonResponse(models.setUserInfo(request))
+
+def getAllMarkers(request):
+    return JsonResponse(models.getAllMarkers())
+
