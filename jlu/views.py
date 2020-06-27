@@ -24,7 +24,7 @@ def setUserInfo(request):
 
 
 def getAllMarkers(request):
-    return JsonResponse(models.getAllMarkers())
+    return HttpResponse(models.getAllMarkers())
 
 
 def createLocation(request):

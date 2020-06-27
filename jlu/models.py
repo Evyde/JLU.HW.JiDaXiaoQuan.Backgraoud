@@ -7,26 +7,28 @@ import requests, json, hashlib, datetime
 
 class User(models.Model):
     nickName = models.CharField(max_length=50)
-    openID = models.TextField(unique=True, default=0, editable=False)
+    openID = models.TextField(unique=True, default=0)
     avatarUrl = models.TextField()
     sessionKey = models.TextField()
     gender = models.SmallIntegerField(default=1)
+    lastLoginTime = models.DateTimeField(auto_now=True)
+    registerTime = models.DateTimeField(auto_now_add=True)
 
 
 class Location(models.Model):
-    latitude = models.FloatField(unique=True, editable=False)
-    longitude = models.FloatField(unique=True, editable=False)
-    createUserOpenID = models.TextField(unique=True, editable=False)
-    name = models.TextField(max_length=100, editable=False)
+    latitude = models.FloatField(unique=True)
+    longitude = models.FloatField(unique=True)
+    createUserOpenID = models.TextField()
+    name = models.TextField(max_length=100)
     passagesID = models.TextField()
-    createTime = models.DateTimeField(editable=False)
-    checkedNum = models.BigIntegerField()
-    laRange = models.FloatField(editable=False)
-    loRange = models.FloatField(editable=False)
-    rank = models.FloatField()
-    totalScore = models.BigIntegerField()
-    totalScorePeople = models.BigIntegerField()
-    city = models.TextField(editable=False)
+    createTime = models.DateTimeField(auto_now_add=True)
+    checkedNum = models.BigIntegerField(default=0)
+    laRange = models.FloatField()
+    loRange = models.FloatField()
+    rank = models.FloatField(default=0.0)
+    totalScore = models.BigIntegerField(default=0)
+    totalScorePeople = models.BigIntegerField(default=0)
+    city = models.TextField(default="Huhhot")
 
 
 class Passages(models.Model):
@@ -76,22 +78,21 @@ def setUserInfo(request):
 
 
 def isInRange(la, lo, testLa, testLo, laRange, loRange):
-    if (abs(la - testLa) <= laRange) and (abs(lo - testLo) <= loRange):
+    if (abs(float(la) - float(testLa)) <= float(laRange)) and (abs(float(lo) - float(testLo)) <= float(loRange)):
         return True
     return False
 
 
 def isLocationExist(location):
-    for i in Location.objects.filter('latitude', 'longitude', 'laRange', 'loRange'):
-        if isInRange(location['latitude'], location['longitude'], i['latitude'], i['longitude'], i['laRange'],
-                     i['loRange']):
+    for i in Location.objects.all().values_list('latitude', 'longitude', 'laRange', 'loRange'):
+        if isInRange(location['latitude'], location['longitude'], i[0], i[1], i[2], i[3]):
             return True
     return False
 
 
 def createLocation(request):
     data = request.GET
-    if not isLocationExist({'latitude': data['latitude'], 'longitude': data['longitude']}):
+    if isLocationExist({'latitude': data['latitude'], 'longitude': data['longitude']}):
         return {'msg': False}
     else:
         Location.objects.create(
@@ -129,4 +130,7 @@ def getPassagesByOpenID(openid):
 
 
 def getAllMarkers():
-    return Location.objects.filter('id', 'latitude', 'longitude')
+    rtn = []
+    for i in Location.objects.all().values_list('id', 'latitude', 'longitude', 'name', 'createTime'):
+        rtn.append({'id': i[0], 'latitude': i[1], 'longitude': i[2], 'callout':{'content': i[3]}, 'createTime': str(i[4])})
+    return json.dumps(rtn)
