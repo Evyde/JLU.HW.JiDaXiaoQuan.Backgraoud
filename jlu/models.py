@@ -13,6 +13,7 @@ class User(models.Model):
     gender = models.SmallIntegerField(default=1)
     lastLoginTime = models.DateTimeField(auto_now=True)
     registerTime = models.DateTimeField(auto_now_add=True)
+    locations = models.TextField()
 
 
 class Location(models.Model):
@@ -36,6 +37,8 @@ class Passages(models.Model):
     locationID = models.BigIntegerField()
     picsUrls = models.TextField()
     passageContent = models.TextField(max_length=10240)
+    passageTitle = models.TextField(max_length=100)
+    abstract = models.TextField()
 
 
 def login(request):
