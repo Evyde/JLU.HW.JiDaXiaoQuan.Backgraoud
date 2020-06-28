@@ -36,25 +36,32 @@ def getPassages(request):
     rtnData = []
     if 'locationid' in request.GET.keys():
         p = models.getPassagesByLocation(request.GET['locationid'])
-        for i in p:
-            rtnData.append({'title': i.passageTitle, 'abstract': i.abstract, 'content': i.passageContent,
-                       'openid': i.createUserOpenID, 'upNum': i.upNum, 'id': i.id})
     else:
         p = models.getPassagesByOpenID(request.GET['openid'])
-        for i in p:
-            rtnData.append({'title': i.passageTitle, 'abstract': i.abstract, 'content': i.passageContent,
-                   'openid': i.createUserOpenID, 'upNum': i.upNum, 'id': i.id})
+    for i in p:
+        url = "/images/star.png"
+        if models.checkUserVoted(i.id, i.createUserOpenID):
+            url = "/images/star_filled.png"
+        rtnData.append({'title': i.passageTitle, 'abstract': i.abstract, 'content': i.passageContent,
+               'openid': i.createUserOpenID, 'upNum': i.upNum, 'id': i.id,
+                'userinfo': getUserInfo(openid=i.createUserOpenID), 'starurl': url,
+                })
     return HttpResponse(json.dumps(rtnData))
 
 
-def getUserInfo(request):
-    u = models.getUserInfoByOpenID(request.GET['openid'])
-    rtnData = {'nickname': u.nickName, 'avatarurl': u.avatarUrl, 'gender': u.gender}
-    return JsonResponse(rtnData)
+def getUserInfo(request=None, openid=None):
+    if openid is None:
+        u = models.getUserInfoByOpenID(request.GET['openid'])
+        rtnData = {'nickname': u.nickName, 'avatarurl': u.avatarUrl, 'gender': u.gender}
+        return JsonResponse(rtnData)
+    else:
+        u = models.getUserInfoByOpenID(openid)
+        rtnData = {'nickname': u.nickName, 'avatarurl': u.avatarUrl, 'gender': u.gender}
+        return rtnData
 
 
 def checkin(request):
-    return JsonResponse(models.checkin(request.GET['openid'], request.GET['locationid']))
+    return JsonResponse(models.checkin(request.GET['openid'], request.GET['locationid'], request.GET['location']))
 
 
 def getAllAnnounce(request):
@@ -79,4 +86,24 @@ def createPassage(request):
 
 
 def voteUp(request):
-    return JsonResponse(models.voteUp(request.GET['passageID']))
+    return JsonResponse(models.voteUp(request.GET['passageID'], request.GET['openid']))
+
+
+def getLocationByID(request):
+    l = models.getLocationByID(request.GET['locationid'])
+    rtnData = {
+    'latitude': l.latitude,
+    'longitude': l.longitude,
+    'createUseropenid': l.createUserOpenID,
+    'name': l.name,
+    'checkednum': l.checkedNum,
+    'larange': l.laRange,
+    'lorange': l.loRange,
+    'rank': l.rank,
+    'totalscore': l.totalScore,
+    'totalscorepeople': l.totalScorePeople,
+    'city': l.city,
+    'id': l.id
+    }
+    return JsonResponse(rtnData)
+

@@ -38,11 +38,12 @@ class Location(models.Model):
 class Passages(models.Model):
     createUserOpenID = models.TextField()
     locationID = models.BigIntegerField()
-    picsUrls = models.TextField()
     passageContent = models.TextField(max_length=10240)
     passageTitle = models.TextField(max_length=100)
     abstract = models.TextField()
     upNum = models.BigIntegerField(default=0)
+    pic = models.ImageField()
+    starUsers = models.ManyToManyField(to="User")
 
 
 def login(request):
@@ -113,6 +114,8 @@ def createLocation(request):
         )
         l.save()
         User.objects.get(openID=data['openid']).checkedinLocations.add(l)
+        l.checkedNum += 1
+        l.save()
         return {'msg': True}
 
 
@@ -146,7 +149,9 @@ def getAllMarkers():
     rtn = []
     for i in Location.objects.all().values_list('id', 'latitude', 'longitude', 'name', 'createTime'):
         rtn.append(
-            {'id': i[0], 'latitude': i[1], 'longitude': i[2], 'callout': {'content': i[3]}, 'createTime': str(i[4])})
+            {'id': i[0], 'latitude': i[1], 'longitude': i[2], 'iconPath':'/images/marker.png','callout': {'content': i[3],
+                'fontSize': 15,'borderRadius': 1,'textAlign':'center',
+      'padding':5}, 'width': "50px", 'height': "50px",'createTime': str(i[4])})
     return json.dumps(rtn)
 
 
@@ -155,14 +160,17 @@ def getUserInfoByOpenID(openid):
 
 
 def checkin(openid, locationid, location):
+    location = json.loads(location)
     for i in User.objects.get(openID=openid).checkedinLocations.all():
         if i is not None:
             if i.id == int(locationid):
                 return {'msg': False}
     l = Location.objects.get(id=locationid)
     if isInRange(l.latitude, l.longitude, location['latitude'], location['longitude'], l.laRange, l.loRange):
-        Location.objects.get(id=locationid).checkedUsers.add(User.objects.get(openID=openid))
+        l.checkedUsers.add(User.objects.get(openID=openid))
         User.objects.get(openID=openid).checkedinLocations.add(Location.objects.get(id=locationid))
+        l.checkedNum += 1
+        l.save()
         return {"msg": True}
     else:
         return {'msg': False}
@@ -178,10 +186,28 @@ def getCheckedinLocations(openid):
     return User.objects.get(openID=openid).checkedinLocations.all()
 
 
-def voteUp(passageID):
+def checkUserVoted(passageid, openid):
+    us = Passages.objects.get(id=passageid).starUsers
+    u = User.objects.get(openID=openid)
+    for i in us:
+        if i is u:
+            return True
+    return False
+
+
+def voteUp(passageid, openid):
     try:
-        Passages.objects.get(id=passageID).add(1)
+        Passages.objects.get(id=passageid).add(1)
+        Passages.objects.get(id=passageid).starUsers.add(User.objects.get(openID=openid))
     except:
         return {'msg': False}
     else:
         return {"msg": True}
+
+
+def getLocationByID(locationid):
+    return Location.objects.get(id=locationid)
+
+
+def getPassagePic(passageid):
+    return Passages.objects.get(id=passageid).pic
