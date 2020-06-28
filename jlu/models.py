@@ -1,8 +1,10 @@
 from django.db import models
 import requests, json, hashlib, datetime
+from jlu import utils
 
 
 # Create your models here.
+# 注释：快写完了才发现可以使用多对多、多对一和一对多关系，比我自己设计的方法方便很多
 
 
 class User(models.Model):
@@ -13,7 +15,7 @@ class User(models.Model):
     gender = models.SmallIntegerField(default=1)
     lastLoginTime = models.DateTimeField(auto_now=True)
     registerTime = models.DateTimeField(auto_now_add=True)
-    locations = models.TextField()
+    checkedinLocations = models.ManyToManyField(to="Location")
 
 
 class Location(models.Model):
@@ -21,7 +23,7 @@ class Location(models.Model):
     longitude = models.FloatField(unique=True)
     createUserOpenID = models.TextField()
     name = models.TextField(max_length=100)
-    passagesID = models.TextField()
+    passages = models.ManyToManyField(to="Passages")
     createTime = models.DateTimeField(auto_now_add=True)
     checkedNum = models.BigIntegerField(default=0)
     laRange = models.FloatField()
@@ -30,6 +32,7 @@ class Location(models.Model):
     totalScore = models.BigIntegerField(default=0)
     totalScorePeople = models.BigIntegerField(default=0)
     city = models.TextField(default="Huhhot")
+    checkedUsers = models.ManyToManyField(to="User")
 
 
 class Passages(models.Model):
@@ -98,7 +101,7 @@ def createLocation(request):
     if isLocationExist({'latitude': data['latitude'], 'longitude': data['longitude']}):
         return {'msg': False}
     else:
-        Location.objects.create(
+        l = Location(
             latitude=data['latitude'],
             longitude=data['longitude'],
             createUserOpenID=data['openid'],
@@ -107,17 +110,22 @@ def createLocation(request):
             laRange=data['laRange'],
             loRange=data['loRange']
         )
+        l.save()
+        User.objects.get(openID=data['openid']).checkedinLocations.add(l)
         return {'msg': True}
 
 
 def createPassage(request):
     data = request.GET
     try:
-        Passages.objects.create(
-        createUserOpenID=data['openid'],
-        locationID=data['locationid'],
-        passageContent=data['passagecontent']
+        p = Passages(
+            createUserOpenID=data['openid'],
+            locationID=data['locationid'],
+            passageTitle=data['passagetitle'],
+            passageContent=data['passagecontent']
         )
+        p.save()
+        Location.objects.get(id=data['locationid']).passages.add(p)
     except:
         return {'msg': False}
     else:
@@ -125,15 +133,41 @@ def createPassage(request):
 
 
 def getPassagesByLocation(locationID):
-    return Passages.objects.get(locationID=locationID)
+    return Passages.objects.filter(locationID=locationID).all()
 
 
 def getPassagesByOpenID(openid):
-    return Passages.objects.get(createUserOpenID=openid)
+    return Passages.objects.filter(createUserOpenID=openid).all()
 
 
 def getAllMarkers():
     rtn = []
     for i in Location.objects.all().values_list('id', 'latitude', 'longitude', 'name', 'createTime'):
-        rtn.append({'id': i[0], 'latitude': i[1], 'longitude': i[2], 'callout':{'content': i[3]}, 'createTime': str(i[4])})
+        rtn.append(
+            {'id': i[0], 'latitude': i[1], 'longitude': i[2], 'callout': {'content': i[3]}, 'createTime': str(i[4])})
     return json.dumps(rtn)
+
+
+def getUserInfoByOpenID(openid):
+    return User.objects.get(openID=openid)
+
+
+def checkin(openid, locationid):
+    for i in User.objects.get(openID=openid).checkedinLocations.all():
+        if i is not None:
+            if i.id == int(locationid):
+                return {'msg': False}
+    Location.objects.get(id=locationid).checkedUsers.add(User.objects.get(openID=openid))
+    User.objects.get(openID=openid).checkedinLocations.add(Location.objects.get(id=locationid))
+    return {"msg": True}
+
+
+def getAllAnnounce():
+    tmp = utils.GetAnnounce()
+    tmp.createCache()
+    return tmp.get()
+
+
+def getCheckedinLocations(openid):
+    return User.objects.get(openID=openid).checkedinLocations.all()
+

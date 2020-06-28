@@ -8,4 +8,9 @@ urlpatterns = [
     url('jlu/getAllMarkers', views.getAllMarkers),
     url('jlu/createLocation', views.createLocation),
     url('jlu/getPassages', views.getPassages),
+    url('jlu/wxGetUserInfo', views.getUserInfo),
+    url('jlu/checkin', views.checkin),
+    url('jlu/getAllAnnounce', views.getAllAnnounce),
+    url('jlu/getCheckedinLocations', views.getCheckedinLocations),
+    url('jlu/createPassage', views.createPassage),
 ]
