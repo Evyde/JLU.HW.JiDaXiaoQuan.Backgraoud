@@ -38,12 +38,12 @@ def getPassages(request):
         p = models.getPassagesByLocation(request.GET['locationid'])
         for i in p:
             rtnData.append({'title': i.passageTitle, 'abstract': i.abstract, 'content': i.passageContent,
-                       'openid': i.createUserOpenID})
+                       'openid': i.createUserOpenID, 'upNum': i.upNum, 'id': i.id})
     else:
         p = models.getPassagesByOpenID(request.GET['openid'])
         for i in p:
             rtnData.append({'title': i.passageTitle, 'abstract': i.abstract, 'content': i.passageContent,
-                   'openid': i.createUserOpenID})
+                   'openid': i.createUserOpenID, 'upNum': i.upNum, 'id': i.id})
     return HttpResponse(json.dumps(rtnData))
 
 
@@ -76,3 +76,7 @@ def getCheckedinLocations(request):
 
 def createPassage(request):
     return JsonResponse(models.createPassage(request))
+
+
+def voteUp(request):
+    return JsonResponse(models.voteUp(request.GET['passageID']))

@@ -42,6 +42,7 @@ class Passages(models.Model):
     passageContent = models.TextField(max_length=10240)
     passageTitle = models.TextField(max_length=100)
     abstract = models.TextField()
+    upNum = models.BigIntegerField(default=0)
 
 
 def login(request):
@@ -122,7 +123,8 @@ def createPassage(request):
             createUserOpenID=data['openid'],
             locationID=data['locationid'],
             passageTitle=data['passagetitle'],
-            passageContent=data['passagecontent']
+            passageContent=data['passagecontent'],
+            abstract=data['passagecontent'][0:50]
         )
         p.save()
         Location.objects.get(id=data['locationid']).passages.add(p)
@@ -152,14 +154,18 @@ def getUserInfoByOpenID(openid):
     return User.objects.get(openID=openid)
 
 
-def checkin(openid, locationid):
+def checkin(openid, locationid, location):
     for i in User.objects.get(openID=openid).checkedinLocations.all():
         if i is not None:
             if i.id == int(locationid):
                 return {'msg': False}
-    Location.objects.get(id=locationid).checkedUsers.add(User.objects.get(openID=openid))
-    User.objects.get(openID=openid).checkedinLocations.add(Location.objects.get(id=locationid))
-    return {"msg": True}
+    l = Location.objects.get(id=locationid)
+    if isInRange(l.latitude, l.longitude, location['latitude'], location['longitude'], l.laRange, l.loRange):
+        Location.objects.get(id=locationid).checkedUsers.add(User.objects.get(openID=openid))
+        User.objects.get(openID=openid).checkedinLocations.add(Location.objects.get(id=locationid))
+        return {"msg": True}
+    else:
+        return {'msg': False}
 
 
 def getAllAnnounce():
@@ -171,3 +177,11 @@ def getAllAnnounce():
 def getCheckedinLocations(openid):
     return User.objects.get(openID=openid).checkedinLocations.all()
 
+
+def voteUp(passageID):
+    try:
+        Passages.objects.get(id=passageID).add(1)
+    except:
+        return {'msg': False}
+    else:
+        return {"msg": True}
