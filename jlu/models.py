@@ -203,9 +203,10 @@ def voteUp(passageid, openid):
         u = User.objects.get(openID=openid)
         p = Passages.objects.get(id=passageid)
         pu = p.starUsers
-        for i in pu:
-            if i is u:
-                return {'msg': False}
+        if pu:
+            for i in pu:
+                if i is u:
+                    return {'msg': False}
         p.upNum += 1
         p.starUsers.add(User.objects.get(openID=openid))
         p.save()
