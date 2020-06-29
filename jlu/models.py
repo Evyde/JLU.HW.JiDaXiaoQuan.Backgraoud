@@ -189,16 +189,21 @@ def getCheckedinLocations(openid):
 def checkUserVoted(passageid, openid):
     us = Passages.objects.get(id=passageid).starUsers
     u = User.objects.get(openID=openid)
-    for i in us:
-        if i is u:
-            return True
+    try:
+        for i in us:
+            if i is u:
+                return True
+    except:
+        pass
     return False
 
 
 def voteUp(passageid, openid):
     try:
-        Passages.objects.get(id=passageid).add(1)
-        Passages.objects.get(id=passageid).starUsers.add(User.objects.get(openID=openid))
+        p = Passages.objects.get(id=passageid)
+        p.upNum += 1
+        p.starUsers.add(User.objects.get(openID=openid))
+        p.save()
     except:
         return {'msg': False}
     else:
