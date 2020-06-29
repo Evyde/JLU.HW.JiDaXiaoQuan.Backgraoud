@@ -191,7 +191,9 @@ def checkUserVoted(passageid, openid):
     u = User.objects.get(openID=openid)
     try:
         for i in us:
+            print("for")
             if i is u:
+                print("TRUE")
                 return True
     except:
         pass
