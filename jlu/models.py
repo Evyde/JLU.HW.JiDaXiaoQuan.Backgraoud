@@ -187,6 +187,7 @@ def getCheckedinLocations(openid):
 
 
 def checkUserVoted(passageid, openid):
+    print(openid)
     us = Passages.objects.get(id=passageid).starUsers
     u = User.objects.get(openID=openid)
     try:
