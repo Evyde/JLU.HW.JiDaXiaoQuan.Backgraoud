@@ -1,0 +1,23 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/logs/logs",
+    "pages/map/map/map",
+    "pages/passage/passage",
+    "pages/location/location",
+    "pages/passage/newPassage"
+  ],
+  "permission": {
+    "scope.userLocation": {
+      "desc": "您的位置信息将用于打卡"
+    }
+  },
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "WeChat",
+    "navigationBarTextStyle": "black"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

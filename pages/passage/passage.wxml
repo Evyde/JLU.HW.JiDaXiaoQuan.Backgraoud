@@ -1,0 +1,20 @@
+<view class="tab-content-recommend" wx:for="{{dataarray}}"  wx:item="item">
+            <view class="content-category">
+                <image class="category-avatar" src="{{item.userinfo.avatarurl}}"/>
+                <text class="category-title">{{item.userinfo.nickname}}</text>
+            </view>
+            <view class="recommend-title">{{item.title}}</view>
+            <view class="recommend-content"
+                data-id="{{item.id}}"
+                data-title="{{item.title}}"
+                data-avatar="{{item.avatarurl}}"
+                data-like="{{item.upNum}}"
+                bindtap="goDetail">{{item.abstract}}</view>
+            <view class="recommend-footer">
+                <view class="recommend-footer-text">
+                    <image src="{{item.starurl}}" class="article_stateimg"></image>
+                    <text>    {{item.upNum}}  赞同</text>
+                </view>
+            </view>
+</view>
+<button class="bttn-material-circle bttn-lg bttn-primary post" type="primary" bindtap="createPassage"><cover-image class="my" src="/images/plus.png"></cover-image></button>

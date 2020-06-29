@@ -1,0 +1,54 @@
+<!--pages/location/location.wxml-->
+<view class="page" data-weui-theme="{{theme}}">
+<form catchsubmit="createLocation">
+	<view class="weui-form">
+		<view class="weui-form__text-area">
+			<h2 class="weui-form__title">创建地点</h2>
+			<view class="weui-form__desc">当前经纬度：{{latitude}}, {{longitude}}</view>
+		</view>
+		<view class="weui-form__control-area">
+			<view class="weui-cells__group weui-cells__group_form">
+				<view class="weui-cells__title">地点信息</view>
+				<view class="weui-cells weui-cells_form">
+					<view class="weui-cell weui-cell_active">
+						<view class="weui-cell__hd"><label class="weui-label">范围(经度)</label></view>
+						<view class="weui-cell__bd">
+							<input class="weui-input" placeholder="一般0.01就是20米左右" placeholder-class="weui-input__placeholder" name="loRange" type="digit" value="{{loRange}}" bindblur="inputslo" />
+						</view>
+					</view>
+          <view class="weui-cell weui-cell_active">
+						<view class="weui-cell__hd"><label class="weui-label">范围(纬度)</label></view>
+						<view class="weui-cell__bd">
+							<input class="weui-input" placeholder="一般0.01就是20米左右" placeholder-class="weui-input__placeholder" name="laRange" type="digit" bindblur="inputsla" value="{{laRange}}" />
+						</view>
+					</view>
+					<view class="weui-cell weui-cell_active">
+						<view class="weui-cell__hd">							
+                            <label class="weui-label">地点名称</label>
+                        </view>
+						<view class="weui-cell__bd">
+							<input class="weui-input" placeholder="填写这个地点的昵称" placeholder-class="weui-input__placeholder" name="name" value="{{name}}" bindblur="inputs" />
+						</view>
+					</view>
+				</view>
+			</view>
+		</view>
+		<view class="weui-form__tips-area">
+			<view class="weui-form__tips">
+                感谢您为社区做出的贡献~
+			</view>
+		</view>
+		<view class="weui-form__opr-area">
+			<button class="weui-btn weui-btn_primary" formType="submit">确定</button>
+		</view>
+		<view class="weui-form__extra-area">
+			<view class="weui-footer">
+				<view class="weui-footer__links">
+					<a href="https://i.evyde.xyz/" class="weui-footer__link">访问我的博客</a>
+				</view>
+				<view class="weui-footer__text">Copyright © 2020-2021 evyde.xyz</view>
+			</view>
+		</view>
+	</view>
+  </form>
+</view>
