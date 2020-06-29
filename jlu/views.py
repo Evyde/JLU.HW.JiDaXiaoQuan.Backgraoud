@@ -40,7 +40,7 @@ def getPassages(request):
         p = models.getPassagesByOpenID(request.GET['openid'])
     for i in p:
         url = "/images/star.png"
-        if models.checkUserVoted(i.id, i.createUserOpenID):
+        if models.checkUserVoted(i.id, request.GET['openid']):
             url = "/images/star_filled.png"
         rtnData.append({'title': i.passageTitle, 'abstract': i.abstract,
                         'openid': i.createUserOpenID, 'upNum': i.upNum, 'id': i.id,
