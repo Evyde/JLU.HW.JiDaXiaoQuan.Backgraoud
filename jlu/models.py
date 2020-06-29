@@ -189,7 +189,9 @@ def getCheckedinLocations(openid):
 def checkUserVoted(passageid, openid):
     print(passageid)
     us = Passages.objects.get(id=passageid).starUsers
+    print("?")
     u = User.objects.get(openID=openid)
+    print("?1")
     try:
         for i in us:
             print("for")
