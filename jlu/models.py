@@ -44,6 +44,7 @@ class Passages(models.Model):
     upNum = models.BigIntegerField(default=0)
     pic = models.ImageField()
     starUsers = models.ManyToManyField(to="User")
+    createTime = models.DateTimeField(auto_now_add=True)
 
 
 def login(request):
@@ -187,15 +188,11 @@ def getCheckedinLocations(openid):
 
 
 def checkUserVoted(passageid, openid):
-    print(passageid)
-    us = Passages.objects.get(id=passageid).starUsers
-    print(us)
+    us = Passages.objects.get(id=passageid).starUsers.all()
     u = User.objects.get(openID=openid)
-    print(u)
     try:
         for i in us:
-            print("for")
-            if i is u:
+            if i == u:
                 print("TRUE")
                 return True
     except:
@@ -207,12 +204,10 @@ def voteUp(passageid, openid):
     try:
         u = User.objects.get(openID=openid)
         p = Passages.objects.get(id=passageid)
-        pu = p.starUsers
-        print(pu.none())
-        print(User.objects.none())
-        if int(pu.count()) != 0:
+        pu = p.starUsers.all()
+        if pu is not pu.none():
             for i in pu:
-                if i is u:
+                if i == u:
                     return {'msg': False}
         p.upNum += 1
         p.starUsers.add(u)
@@ -232,3 +227,14 @@ def getPassagePic(passageid):
 
 def getPassageContent(passageid):
     return Passages.objects.get(id=passageid).passageContent
+
+
+def getPassageTime(passageid):
+    p = Passages.objects.get(id=passageid)
+    try:
+        if datetime.datetime.now().date() == p.createTime.date():
+            return str((p.createTime+datetime.timedelta(hours=8)).time().strftime("%H:%M:%S"))
+        else:
+            return str((p.createTime+datetime.timedelta(hours=8)).date())
+    except:
+        return "1970-01-01"

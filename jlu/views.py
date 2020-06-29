@@ -8,10 +8,6 @@ from jlu import models
 # Create your views here.
 
 
-def test(request):
-    return HttpResponse(json.dumps({"title": "helloworld"}))
-
-
 def wxLogin(request):
     return JsonResponse(models.login(request))
 
@@ -45,6 +41,7 @@ def getPassages(request):
         rtnData.append({'title': i.passageTitle, 'abstract': i.abstract,
                         'openid': i.createUserOpenID, 'upNum': i.upNum, 'id': i.id,
                         'userinfo': getUserInfo(openid=i.createUserOpenID), 'starurl': url,
+                        'createtime': models.getPassageTime(i.id),
                         })
         print(url)
     if 'sortby' in request.GET.keys():
@@ -117,4 +114,10 @@ def getLocationByID(request):
 
 
 def getPassageContent(request):
-    return JsonResponse({'content': models.getPassageContent(request.GET['passageid'])})
+    return JsonResponse({'content': models.getPassageContent(request.GET['passageid']),
+                         'createtime': models.getPassageTime(request.GET['passageid']),
+                         })
+
+
+def test(request):
+    return HttpResponse("test")
