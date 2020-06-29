@@ -42,10 +42,11 @@ def getPassages(request):
         url = "/images/star.png"
         if models.checkUserVoted(i.id, i.createUserOpenID):
             url = "/images/star_filled.png"
-        rtnData.append({'title': i.passageTitle, 'abstract': i.abstract, 'content': i.passageContent,
-               'openid': i.createUserOpenID, 'upNum': i.upNum, 'id': i.id,
-                'userinfo': getUserInfo(openid=i.createUserOpenID), 'starurl': url,
-                })
+        rtnData.append({'title': i.passageTitle, 'abstract': i.abstract,
+                        'openid': i.createUserOpenID, 'upNum': i.upNum, 'id': i.id,
+                        'userinfo': getUserInfo(openid=i.createUserOpenID), 'starurl': url,
+                        })
+    rtnData.sort(key=lambda e: int(e.__getitem__('upNum')), reverse=True)
     return HttpResponse(json.dumps(rtnData))
 
 
@@ -73,11 +74,11 @@ def getCheckedinLocations(request):
     rtnData = []
     for i in locations:
         rtnData.append({
-                        'id': str(i.id),
-                        'name': i.name,
-                        'num': i.checkedNum,
-                        'latitude': str(i.latitude),
-                        'longitude': str(i.longitude)})
+            'id': str(i.id),
+            'name': i.name,
+            'num': i.checkedNum,
+            'latitude': str(i.latitude),
+            'longitude': str(i.longitude)})
     return HttpResponse(json.dumps(rtnData))
 
 
@@ -86,24 +87,27 @@ def createPassage(request):
 
 
 def voteUp(request):
-    return JsonResponse(models.voteUp(request.GET['passageID'], request.GET['openid']))
+    return JsonResponse(models.voteUp(request.GET['passageid'], request.GET['openid']))
 
 
 def getLocationByID(request):
     l = models.getLocationByID(request.GET['locationid'])
     rtnData = {
-    'latitude': l.latitude,
-    'longitude': l.longitude,
-    'createUseropenid': l.createUserOpenID,
-    'name': l.name,
-    'checkednum': l.checkedNum,
-    'larange': l.laRange,
-    'lorange': l.loRange,
-    'rank': l.rank,
-    'totalscore': l.totalScore,
-    'totalscorepeople': l.totalScorePeople,
-    'city': l.city,
-    'id': l.id
+        'latitude': l.latitude,
+        'longitude': l.longitude,
+        'createUseropenid': l.createUserOpenID,
+        'name': l.name,
+        'checkednum': l.checkedNum,
+        'larange': l.laRange,
+        'lorange': l.loRange,
+        'rank': l.rank,
+        'totalscore': l.totalScore,
+        'totalscorepeople': l.totalScorePeople,
+        'city': l.city,
+        'id': l.id
     }
     return JsonResponse(rtnData)
 
+
+def getPassageContent(request):
+    return JsonResponse({'content': models.getPassageContent(request.GET['passageid'])})

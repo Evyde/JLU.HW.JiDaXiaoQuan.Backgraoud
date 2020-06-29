@@ -200,14 +200,18 @@ def checkUserVoted(passageid, openid):
 
 def voteUp(passageid, openid):
     try:
+        u = User.objects.get(openID=openid)
         p = Passages.objects.get(id=passageid)
+        pu = p.starUsers
+        for i in pu:
+            if i is u:
+                return {'msg': False}
         p.upNum += 1
         p.starUsers.add(User.objects.get(openID=openid))
         p.save()
     except:
         return {'msg': False}
-    else:
-        return {"msg": True}
+    return {"msg": True}
 
 
 def getLocationByID(locationid):
@@ -216,3 +220,7 @@ def getLocationByID(locationid):
 
 def getPassagePic(passageid):
     return Passages.objects.get(id=passageid).pic
+
+
+def getPassageContent(passageid):
+    return Passages.objects.get(id=passageid).passageContent
