@@ -3,6 +3,9 @@ from django.http import HttpResponse
 from django.http import JsonResponse
 import json
 from jlu import models
+from django.template.context_processors import csrf
+from django.views.decorators.csrf import csrf_exempt
+import pdb
 
 
 # Create your views here.
@@ -85,7 +88,7 @@ def getCheckedinLocations(request):
             'longitude': str(i.longitude)})
     return HttpResponse(json.dumps(rtnData))
 
-
+@csrf_exempt
 def createPassage(request):
     return JsonResponse(models.createPassage(request))
 
@@ -114,10 +117,26 @@ def getLocationByID(request):
 
 
 def getPassageContent(request):
-    return JsonResponse({'content': models.getPassageContent(request.GET['passageid']),
+    p = models.getPassageByID(request.GET['passageid'])
+    url = "/images/thumb.png"
+    if models.checkUserVoted(request.GET['passageid'], request.GET['openid']):
+        url = "/images/thumb_filled.png"
+    return JsonResponse({'content': p.passageContent,
                          'createtime': models.getPassageTime(request.GET['passageid']),
+                         'title': p.passageTitle,
+                         'openid': p.createUserOpenID, 'upNum': p.upNum, 'id': p.id,
+                         'userinfo': getUserInfo(openid=p.createUserOpenID),
+                         'thumburl': url,
                          })
 
 
 def test(request):
     return HttpResponse("test")
+
+
+def get_csrf(request):
+    # 生成 csrf 数据，发送给前端
+    # 弃用，微信小程序不支持Cookie
+    x = csrf(request)
+    csrf_token = x['csrf_token']
+    return JsonResponse({'csrf': csrf_token})

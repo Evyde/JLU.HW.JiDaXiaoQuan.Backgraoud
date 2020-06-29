@@ -1,6 +1,7 @@
 from django.db import models
 import requests, json, hashlib, datetime
 from jlu import utils
+from urllib import parse
 
 
 # Create your models here.
@@ -38,7 +39,7 @@ class Location(models.Model):
 class Passages(models.Model):
     createUserOpenID = models.TextField()
     locationID = models.BigIntegerField()
-    passageContent = models.TextField(max_length=10240)
+    passageContent = models.TextField()
     passageTitle = models.TextField(max_length=100)
     abstract = models.TextField()
     upNum = models.BigIntegerField(default=0)
@@ -65,6 +66,15 @@ def signature(request):
     openID = str(request.GET['openid'])
     s1 = hashlib.sha1(str(str(request.GET['rawData']) + User.objects.get(openID=openID).sessionKey).encode('utf-8'))
     return str(s1.hexdigest()) == str(request.GET['signature'])
+
+
+def updateRank(locationid, stars):
+    l = Location.objects.get(id=int(locationid))
+    l.totalScore += int(stars)
+    l.totalScorePeople += 1
+    l.save()
+    l.rank = l.totalScore/l.totalScorePeople
+    l.save()
 
 
 def getUserInfo(openid):
@@ -117,11 +127,12 @@ def createLocation(request):
         User.objects.get(openID=data['openid']).checkedinLocations.add(l)
         l.checkedNum += 1
         l.save()
+        updateRank(l.id, data['stars'])
         return {'msg': True}
 
 
 def createPassage(request):
-    data = request.GET
+    data = json.loads(request.body)
     try:
         p = Passages(
             createUserOpenID=data['openid'],
@@ -132,6 +143,7 @@ def createPassage(request):
         )
         p.save()
         Location.objects.get(id=data['locationid']).passages.add(p)
+        updateRank(data['locationid'], data['stars'])
     except:
         return {'msg': False}
     else:
@@ -225,16 +237,16 @@ def getPassagePic(passageid):
     return Passages.objects.get(id=passageid).pic
 
 
-def getPassageContent(passageid):
-    return Passages.objects.get(id=passageid).passageContent
+def getPassageByID(passageid):
+    return Passages.objects.get(id=passageid)
 
 
 def getPassageTime(passageid):
     p = Passages.objects.get(id=passageid)
     try:
         if datetime.datetime.now().date() == p.createTime.date():
-            return str((p.createTime+datetime.timedelta(hours=8)).time().strftime("%H:%M:%S"))
+            return str(p.createTime.time().strftime("%H:%M:%S"))
         else:
-            return str((p.createTime+datetime.timedelta(hours=8)).date())
+            return str(p.createTime.date())
     except:
         return "1970-01-01"

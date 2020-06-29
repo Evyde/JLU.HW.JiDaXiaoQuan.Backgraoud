@@ -15,5 +15,6 @@ urlpatterns = [
     url('jlu/createPassage', views.createPassage),
     url('jlu/voteUp', views.voteUp),
     url('jlu/getLocationByID', views.getLocationByID),
-    url('jlu/test', views.test)
+    url('jlu/getPassageContent', views.getPassageContent),
+    url('jlu/test', views.test),
 ]
