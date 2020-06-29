@@ -208,7 +208,7 @@ def voteUp(passageid, openid):
         u = User.objects.get(openID=openid)
         p = Passages.objects.get(id=passageid)
         pu = p.starUsers
-        if pu is not User.objects.none():
+        if pu is not None:
             for i in pu:
                 if i is u:
                     return {'msg': False}
