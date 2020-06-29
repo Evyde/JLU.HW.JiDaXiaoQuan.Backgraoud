@@ -46,7 +46,13 @@ def getPassages(request):
                         'openid': i.createUserOpenID, 'upNum': i.upNum, 'id': i.id,
                         'userinfo': getUserInfo(openid=i.createUserOpenID), 'starurl': url,
                         })
-    rtnData.sort(key=lambda e: int(e.__getitem__('upNum')), reverse=True)
+    if 'sortby' in request.GET.keys():
+        if request.GET['sortby'] == "time":
+            rtnData.sort(key=lambda e: int(e.__getitem__('id')), reverse=True)
+        else:
+            rtnData.sort(key=lambda e: int(e.__getitem__('upNum')), reverse=True)
+    else:
+        rtnData.sort(key=lambda e: int(e.__getitem__('upNum')), reverse=True)
     return HttpResponse(json.dumps(rtnData))
 
 
