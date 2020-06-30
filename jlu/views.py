@@ -87,6 +87,7 @@ def getCheckedinLocations(request):
             'longitude': str(i.longitude)})
     return HttpResponse(json.dumps(rtnData))
 
+
 @csrf_exempt
 def createPassage(request):
     return JsonResponse(models.createPassage(request))

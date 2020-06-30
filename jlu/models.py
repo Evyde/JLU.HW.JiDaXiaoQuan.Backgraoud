@@ -74,7 +74,7 @@ def updateRank(locationid, stars):
     l.totalScore += int(stars)
     l.totalScorePeople += 1
     l.save()
-    l.rank = l.totalScore/l.totalScorePeople
+    l.rank = l.totalScore / l.totalScorePeople
     l.save()
 
 
@@ -163,9 +163,10 @@ def getAllMarkers():
     rtn = []
     for i in Location.objects.all().values_list('id', 'latitude', 'longitude', 'name', 'createTime'):
         rtn.append(
-            {'id': i[0], 'latitude': i[1], 'longitude': i[2], 'iconPath':'/images/marker.png','callout': {'content': i[3],
-                'fontSize': 15,'borderRadius': 1,'textAlign':'center',
-      'padding':5}, 'width': "50px", 'height': "50px",'createTime': str(i[4])})
+            {'id': i[0], 'latitude': i[1], 'longitude': i[2], 'iconPath': '/images/marker.png',
+             'callout': {'content': i[3],
+                         'fontSize': 15, 'borderRadius': 1, 'textAlign': 'center',
+                         'padding': 5}, 'width': "50px", 'height': "50px", 'createTime': str(i[4])})
     return json.dumps(rtn)
 
 
