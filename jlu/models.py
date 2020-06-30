@@ -245,7 +245,7 @@ def getPassageTime(passageid):
     p = Passages.objects.get(id=passageid)
     try:
         if datetime.datetime.now().date() == p.createTime.date():
-            return str(p.createTime.time().strftime("%H:%M:%S"))
+            return str(p.createTime.time().strftime("%H:%M"))
         else:
             return str(p.createTime.date())
     except:
