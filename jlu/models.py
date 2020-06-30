@@ -252,3 +252,11 @@ def getPassageTime(passageid):
             return str(p.createTime.date())
     except:
         return "1970-01-01"
+
+
+def getUserHistory(openid):
+    locations = 0
+    passages = 0
+    locations += User.objects.get(openID=openid).checkedinLocations.count()
+    passages += len(Passages.objects.filter(createUserOpenID=openid))
+    return {'locations': locations, 'passages': passages}

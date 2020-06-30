@@ -140,3 +140,7 @@ def get_csrf(request):
     x = csrf(request)
     csrf_token = x['csrf_token']
     return JsonResponse({'csrf': csrf_token})
+
+
+def getUserHistory(request):
+    return JsonResponse(models.getUserHistory(request.GET['openid']))

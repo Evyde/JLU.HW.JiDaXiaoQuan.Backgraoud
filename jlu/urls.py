@@ -16,5 +16,6 @@ urlpatterns = [
     url('jlu/voteUp', views.voteUp),
     url('jlu/getLocationByID', views.getLocationByID),
     url('jlu/getPassageContent', views.getPassageContent),
+    url('jlu/getUserHistory', views.getUserHistory),
     url('jlu/test', views.test),
 ]
