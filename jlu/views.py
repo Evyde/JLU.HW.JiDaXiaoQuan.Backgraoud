@@ -44,7 +44,7 @@ def getPassages(request):
         rtnData.append({'title': i.passageTitle, 'abstract': i.abstract,
                         'openid': i.createUserOpenID, 'upNum': i.upNum, 'id': i.id,
                         'userinfo': getUserInfo(openid=i.createUserOpenID), 'starurl': url,
-                        'createtime': models.getPassageTime(i.id),
+                        'createtime': models.getPassageTime(i.id), 'seenusers': i.seenUsersNum,
                         })
     if 'sortby' in request.GET.keys():
         if request.GET['sortby'] == "time":
@@ -118,6 +118,8 @@ def getLocationByID(request):
 
 def getPassageContent(request):
     p = models.getPassageByID(request.GET['passageid'])
+    p.seenUsersNum += 1
+    p.save()
     url = "/images/thumb.png"
     if models.checkUserVoted(request.GET['passageid'], request.GET['openid']):
         url = "/images/thumb_filled.png"

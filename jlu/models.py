@@ -47,6 +47,7 @@ class Passages(models.Model):
     pic = models.ImageField()
     starUsers = models.ManyToManyField(to="User")
     createTime = models.DateTimeField(auto_now_add=True)
+    seenUsersNum = models.BigIntegerField(default=0)
 
 
 def login(request):
