@@ -95,6 +95,7 @@ def setUserInfo(request):
             return {'msg': False}
         else:
             return {'msg': True}
+    return {'msg': False}
 
 
 def isInRange(la, lo, testLa, testLo, laRange, loRange):
