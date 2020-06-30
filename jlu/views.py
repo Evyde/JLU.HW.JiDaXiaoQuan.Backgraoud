@@ -46,7 +46,6 @@ def getPassages(request):
                         'userinfo': getUserInfo(openid=i.createUserOpenID), 'starurl': url,
                         'createtime': models.getPassageTime(i.id),
                         })
-        print(url)
     if 'sortby' in request.GET.keys():
         if request.GET['sortby'] == "time":
             rtnData.sort(key=lambda e: int(e.__getitem__('id')), reverse=True)

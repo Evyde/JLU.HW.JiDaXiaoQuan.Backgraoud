@@ -2,6 +2,7 @@ from django.db import models
 import requests, json, hashlib, datetime
 from jlu import utils
 from urllib import parse
+import pdb
 
 
 # Create your models here.
@@ -97,6 +98,7 @@ def setUserInfo(request):
 
 
 def isInRange(la, lo, testLa, testLo, laRange, loRange):
+    pdb.set_trace()
     if (abs(float(la) - float(testLa)) <= float(laRange)) and (abs(float(lo) - float(testLo)) <= float(loRange)):
         return True
     return False
@@ -205,7 +207,6 @@ def checkUserVoted(passageid, openid):
     try:
         for i in us:
             if i == u:
-                print("TRUE")
                 return True
     except:
         pass
