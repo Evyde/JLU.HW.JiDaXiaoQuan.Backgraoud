@@ -2,6 +2,8 @@
 Generate a url to JiLin University VPN
 '''
 import urllib.parse
+import urllib3
+import chardet
 
 key = [0x6f, 0x68, 0xde, 0x3, 0xb8, 0xaf, 0xf7, 0xcf, 0xe1, 0x97, 0x16, 0x33, 0x7, 0xca, 0xbc, 0xaa, 0xc6]
 meaningless_bullshit = '77726476706e69737468656265737421'
@@ -94,7 +96,7 @@ class GetAnnounce(object):
     __downloadBaseUrl = "rd/download/attachdownload.jsp?res="
     __header = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.87 Safari/537.36',
-        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'}
+        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'}
     __obj = None
     __initFlag = False
     __max = 31
@@ -116,7 +118,7 @@ class GetAnnounce(object):
         self.__logger = Logger()
         if self.__initFlag is False:
             if text == "" or text == " ":
-                self.__domain = "https://oa.jlu.edu.cn/"
+                self.__domain = "https://sh.evyde.xyz:6565/"
             else:
                 self.__domain = text
             if self.__testHttp(self.__domain):
@@ -188,7 +190,9 @@ class GetAnnounce(object):
             tmpLongTitle = ""
             self.__logger.info("正在获取%s《%s》..." % (i['top'], i['title']))
             '''同时获取完整标题、时间'''
-            html = requests.get(i['href'], headers=self.__header).text
+            html = requests.get(i['href'], headers=self.__header)
+            html = html.content.decode("utf-8", 'replace')
+
             data = etree.HTML(html)
             content = data.xpath('/html/body//div')
             for j in content:
