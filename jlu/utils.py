@@ -234,7 +234,8 @@ class GetAnnounce(object):
 
             rtnContent.append(
                 {'title': tmpLongTitle, 'address': i['href'], 'time': time, 'author': i['author'],
-                 'content': tmpResult, 'attach': tmpAttach, 'sTitle': i['title'], 'top': i['top']})
+                 'content': tmpResult, 'attach': tmpAttach, 'sTitle': i['title'], 'top': i['top'],
+                 'linkqrcode': "http://qr.topscan.com/api.php?text="+i['href']})
         return rtnContent
 
     def createContentCache(self):
