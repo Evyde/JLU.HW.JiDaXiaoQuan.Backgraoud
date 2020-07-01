@@ -61,13 +61,21 @@ def login(request):
         User.objects.filter(openID=dataJSON['openid']).update(sessionKey=dataJSON['session_key'])
     else:
         User.objects.create(openID=dataJSON['openid'], sessionKey=dataJSON['session_key'])
-    return {'openid': dataJSON['openid'], 'errcode': 0}
+    return {'openid': dataJSON['openid'], 'errcode': 0, 'loginkey': getLoginKey(dataJSON['openid'])}
 
 
 def signature(request):
     openID = str(request.GET['openid'])
     s1 = hashlib.sha1(str(str(request.GET['rawData']) + User.objects.get(openID=openID).sessionKey).encode('utf-8'))
     return str(s1.hexdigest()) == str(request.GET['signature'])
+
+
+def getLoginKey(openid):
+    return hashlib.md5(str(openid+User.objects.get(openID=openid).sessionKey).encode()).hexdigest()
+
+
+def verifySession(openid, loginkey):
+    return getLoginKey(openid) == loginkey
 
 
 def updateRank(locationid, stars):
@@ -114,6 +122,8 @@ def isLocationExist(location):
 
 def createLocation(request):
     data = request.GET
+    if not verifySession(data['openid'], data['loginkey']):
+        return {'msg': False}
     if isLocationExist({'latitude': data['latitude'], 'longitude': data['longitude']}):
         return {'msg': False}
     else:
@@ -136,6 +146,8 @@ def createLocation(request):
 
 def createPassage(request):
     data = json.loads(request.body)
+    if not verifySession(data['openid'], data['loginkey']):
+        return {'msg': False}
     try:
         p = Passages(
             createUserOpenID=data['openid'],
@@ -176,7 +188,9 @@ def getUserInfoByOpenID(openid):
     return User.objects.get(openID=openid)
 
 
-def checkin(openid, locationid, location):
+def checkin(openid, locationid, location, loginkey):
+    if not verifySession(openid, loginkey):
+        return {'msg': False}
     location = json.loads(location)
     for i in User.objects.get(openID=openid).checkedinLocations.all():
         if i is not None:
@@ -215,7 +229,9 @@ def checkUserVoted(passageid, openid):
     return False
 
 
-def voteUp(passageid, openid):
+def voteUp(passageid, openid, loginkey):
+    if not verifySession(openid, loginkey):
+        return {'msg': False}
     try:
         u = User.objects.get(openID=openid)
         p = Passages.objects.get(id=passageid)

@@ -68,7 +68,7 @@ def getUserInfo(request=None, openid=None):
 
 
 def checkin(request):
-    return JsonResponse(models.checkin(request.GET['openid'], request.GET['locationid'], request.GET['location']))
+    return JsonResponse(models.checkin(request.GET['openid'], request.GET['locationid'], request.GET['location'], request.GET['loginkey']))
 
 
 def getAllAnnounce(request):
@@ -94,7 +94,7 @@ def createPassage(request):
 
 
 def voteUp(request):
-    return JsonResponse(models.voteUp(request.GET['passageid'], request.GET['openid']))
+    return JsonResponse(models.voteUp(request.GET['passageid'], request.GET['openid'], request.GET['loginkey']))
 
 
 def getLocationByID(request):
