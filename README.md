@@ -1,10 +1,39 @@
-# JLU-Wechat-Miniprogram-Backgraoud
+# JLU-Wechat-Miniprogram
 
-# 待办事项：
-- [x] 让用户添加地点，并选择合适大小的范围，计算出四个点的坐标，此后有用户打卡时，判断用户是否在该范围内，如果是，完成打卡行为。  
-- [x] 文章数据表创建`passageTitle`字段，如有可能创建`abstract`（摘要）字段。  
-- [ ] 创建一个浮于地图上的圆形绿色按钮，＋，点击后调用`createLocation`函数。  
-- [ ] 点击地点后，将地图空间缩小到50%，然后弹出一个文章列表，该文章列表可滑动，右下角有两个按钮，分别是导航（调用`wx.openLocation`函数）和新建文章（调用`createPassage`函数），而文章列表
-显示的左面为用户头像+用户名，右面为文章标题+摘要，如有可能，加一个显示完整文章的页面（有点赞按钮），如没可能，把摘要页的摘要直接改成完整文章。
-- [x] 校内通知（只能返回假数据了，时间不够）
+This branch is background part, see frontend branch if you are interested in the frontend.
+
+## Main Functions
+### Main Page
+
+Location checking and comment.
+
+<img width="182" alt="image" src="https://user-images.githubusercontent.com/9302540/209428832-2fa6b712-4e1a-40b5-a3fe-3efc3aed0f8d.png">
+
+<img width="183" alt="image" src="https://user-images.githubusercontent.com/9302540/209428844-c4387f6a-6b8e-4b51-8289-592f56b8a1a2.png">
+
+### Announcement
+
+Fetch and show the school announcement in the inner network.
+
+<img width="169" alt="image" src="https://user-images.githubusercontent.com/9302540/209428922-f00fffbe-298e-45e3-b1f5-b622cb751f5d.png">
+
+<img width="170" alt="image" src="https://user-images.githubusercontent.com/9302540/209428927-46b0d8d9-111d-4fea-9700-70d018fd1f50.png">
+
+
+### Passages
+
+Show users' passages that leaves in some place.
+
+<img width="174" alt="image" src="https://user-images.githubusercontent.com/9302540/209428949-074241fc-4e92-4ef4-99f2-93d106a8373b.png">
+
+<img width="198" alt="image" src="https://user-images.githubusercontent.com/9302540/209428953-261b9dff-876c-4e2c-9a6d-3d3971b551ab.png">
+
+### Location Checkin
+
+Create location and comment.
+
+<img width="207" alt="image" src="https://user-images.githubusercontent.com/9302540/209428972-94b55dac-cefa-444b-a820-b06f0541a0e8.png">
+
+<img width="133" alt="image" src="https://user-images.githubusercontent.com/9302540/209428975-5a26e3eb-3a6f-400e-8768-f66100e154f5.png">
+
 
